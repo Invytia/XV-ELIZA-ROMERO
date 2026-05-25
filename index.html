@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis XV Años - Eliza Romero</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* ================= VARIABLES ================= */
+        :root {
+            --rosa-palo: #DD969C;
+            --rosa-claro: #fcf1f2;
+            --texto-oscuro: #4a4a4a;
+            --blanco: #ffffff;
+            --oro-rosado: #b76e79;
+        }
+
+        /* ================= RESET & BASE ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--texto-oscuro);
+            overflow: hidden; /* Se bloquea el scroll hasta abrir el sobre */
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+        }
+
+        .cursive {
+            font-family: 'Great Vibes', cursive;
+            color: var(--rosa-palo);
+        }
+
+        /* ================= CONTENEDOR PRINCIPAL ================= */
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: var(--rosa-claro);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow-x: hidden;
+            display: none; /* Se muestra con JS */
+        }
+
+        /* ================= ANIMACIÓN DEL SOBRE (PANTALLA 1) ================= */
+        .envelope-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            display: flex;
+            background-color: #333; /* Color de fondo por si hay retrasos */
+        }
+
+        .flap {
+            width: 50%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cream-paper.png') var(--blanco);
+            transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        .flap.left { border-right: 1px solid rgba(221, 150, 156, 0.3); }
+        .flap.right { border-left: 1px solid rgba(221, 150, 156, 0.3); }
+
+        /* Clases para animar apertura */
+        .flap.left.open { transform: translateX(-100%); }
+        .flap.right.open { transform: translateX(100%); }
+
+        .seal-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .seal-container.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .click-text {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 10px;
+            color: var(--rosa-palo);
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .wax-seal {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--blanco) 30%, #f0f0f0 90%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                0 4px 10px rgba(0,0,0,0.1),
+                inset 0 0 0 4px var(--blanco),
+                inset 0 0 0 6px var(--rosa-palo);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .wax-seal:hover { transform: scale(1.05); }
+
+        .wax-seal .initial {
+            font-family: 'Great Vibes', cursive;
+            font-size: 45px;
+            color: var(--rosa-palo);
+            line-height: 1;
+            margin-top: 5px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* ================= DISEÑO DE LA INVITACIÓN ================= */
+        
+        /* Efectos visuales de fondo (estilo humo/brillos) */
+        .bg-element {
+            position: absolute;
+            background: radial-gradient(circle, rgba(221,150,156,0.3) 0%, rgba(221,150,156,0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* Cabecera / Hero */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 60px;
+        }
+
+        .hero-title {
+            font-size: 60px;
+            margin-bottom: -10px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--texto-oscuro);
+            margin-bottom: 30px;
+        }
+
+        /* Placeholder de foto (polaroid) */
+        .photo-frame {
+            background: var(--blanco);
+            padding: 10px 10px 30px 10px;
+            box-shadow: 0 10px 20px rgba(221,150,156,0.2);
+            transform: rotate(-2deg);
+            margin: 20px auto;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Cuenta regresiva */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 15px;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-box span:first-child {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+            color: var(--rosa-palo);
+        }
+
+        .time-box span:last-child {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Secciones de texto */
+        .text-block {
+            margin: 20px 0;
+        }
+        
+        .number-15 {
+            font-size: 120px;
+            color: rgba(221,150,156,0.15);
+            font-family: 'Playfair Display', serif;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            top: 0;
+        }
+
+        .parents-section p {
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .parents-names {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: var(--rosa-palo);
+            font-weight: 600;
+        }
+
+        /* Detalles del Evento */
+        .event-details {
+            background: var(--blanco);
+            margin: 20px;
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .event-details h3 {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .date-display {
+            font-size: 24px;
+            color: var(--rosa-palo);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--rosa-palo);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .location-block {
+            margin-bottom: 30px;
+        }
+
+        .location-block h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .location-block p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--rosa-palo);
+            color: var(--blanco);
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover { background-color: var(--oro-rosado); }
+
+        /* Dresscode & RSVP */
+        .dresscode-icon {
+            font-size: 40px;
+            color: var(--rosa-palo);
+            margin-bottom: 15px;
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 10px, #fff 10px, #fff 20px);
+            border: 2px dashed var(--rosa-palo);
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--rosa-palo);
+            font-size: 12px;
+        }
+
+        .footer {
+            padding: 60px 20px;
+            background-color: var(--rosa-palo);
+            color: var(--blanco);
+        }
+
+        .footer h2 { color: var(--blanco); }
+
+    </style>
+</head>
+<body>
+
+    <div class="envelope-overlay" id="envelope">
+        <div class="flap left" id="flapLeft"></div>
+        <div class="flap right" id="flapRight"></div>
+        
+        <div class="seal-container" id="sealContainer">
+            <div class="click-text">Haz clic para abrir</div>
+            <div class="wax-seal" onclick="openEnvelope()">
+                <span class="initial">E</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="mainApp">
+        
+        <div class="bg-element" style="top: 5%; left: -20%; width: 300px; height: 300px;"></div>
+        <div class="bg-element" style="top: 40%; right: -20%; width: 250px; height: 250px;"></div>
+        <div class="bg-element" style="bottom: 10%; left: 10%; width: 400px; height: 400px;"></div>
+
+        <section class="hero">
+            <h1 class="cursive hero-title">Mis XV Años</h1>
+            <div class="hero-subtitle">Eliza Romero</div>
+            
+            <div class="photo-frame">
+                <img src="https://images.unsplash.com/photo-1517530094915-500495b15ade?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Eliza Romero">
+            </div>
+
+            <div class="countdown" id="countdown">
+                <div class="time-box">
+                    <span id="days">00</span>
+                    <span>Días</span>
+                </div>
+                <div class="time-box">
+                    <span id="hours">00</span>
+                    <span>Horas</span>
+                </div>
+                <div class="time-box">
+                    <span id="minutes">00</span>
+                    <span>Min</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="parents-section text-block" style="position: relative;">
+            <div class="number-15">15</div>
+            <h2 class="cursive" style="font-size: 40px; margin-bottom: 20px;">Con la bendición...</h2>
+            <p>De Dios y de mis padres, tengo la alegría de invitarlos a celebrar este día tan especial para mí.</p>
+            <br>
+            <div class="parents-names">Brenda González</div>
+            <div class="parents-names">&amp;</div>
+            <div class="parents-names">Germán Romero</div>
+        </section>
+
+        <section>
+            <div class="event-details">
+                <h3 class="cursive">Cuándo & Dónde</h3>
+                
+                <div class="date-display">
+                    <strong>19 de Septiembre</strong>
+                </div>
+
+                <div class="location-block">
+                    <i class="fa-solid fa-church" style="color: var(--rosa-palo); font-size: 24px; margin-bottom: 10px;"></i>
+                    <h4>Ceremonia Religiosa</h4>
+                    <p><strong>Parroquia del Inmaculado</strong></p>
+                    <p>4:00 PM</p>
+                    <a href="#" class="btn"><i class="fa-solid fa-map-location-dot"></i> Ver Mapa</a>
+                </div>
+
+                <div class="location-block" style="margin-top: 40px;">
+                    <i class="fa-solid fa-champagne-glasses" style="color: var(--rosa-palo); font-size: 24px; margin-bottom: 10px;"></i>
+                    <h4>Recepción</h4>
+                    <p><strong>Salón San Carlos</strong></p>
+                    <p>7:00 PM</p>
+                    <a href="#" class="btn"><i class="fa-solid fa-map-location-dot"></i> Ver Mapa</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="dresscode">
+            <h2 class="cursive" style="font-size: 45px;">Dress Code</h2>
+            <div class="dresscode-icon">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <h4>Formal / Elegante</h4>
+            <p style="font-size: 13px; color: #666; margin-top: 10px; padding: 0 20px;">
+                Nos encantaría verte lucir espectacular. <br>
+                <em>(Se reserva el color palo de rosa para la festejada)</em>
+            </p>
+        </section>
+
+        <section class="rsvp">
+            <h2 class="cursive" style="font-size: 45px;">RSVP</h2>
+            <p style="font-size: 14px; margin: 15px 0;">Por favor confirma tu asistencia <br>antes del 1 de Septiembre.</p>
+            
+            <div class="qr-placeholder">
+                Espacio para <br> Código QR
+            </div>
+            
+            <a href="https://wa.me/1234567890" target="_blank" class="btn" style="margin-top: 10px;">
+                <i class="fa-brands fa-whatsapp"></i> Confirmar por WhatsApp
+            </a>
+        </section>
+
+        <section class="gifts">
+            <h2 class="cursive" style="font-size: 45px;">Sugerencias de Regalo</h2>
+            <p style="font-size: 14px; padding: 0 20px; line-height: 1.6; margin-top: 15px;">
+                Tu presencia es mi mejor regalo, pero si deseas tener un detalle conmigo, habrá un buzón para lluvia de sobres en la recepción.
+            </p>
+            <i class="fa-regular fa-envelope" style="font-size: 30px; color: var(--rosa-palo); margin-top: 20px;"></i>
+        </section>
+
+        <section class="footer">
+            <h2 class="cursive" style="font-size: 50px; margin-bottom: 10px;">¡Te espero!</h2>
+            <p style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Con amor, Eliza</p>
+        </section>
+
+    </div>
+
+    <script>
+        // --- 1. Lógica de apertura del sobre ---
+        function openEnvelope() {
+            // Oculta el botón/sello
+            document.getElementById('sealContainer').classList.add('hide');
+            
+            // Abre las solapas
+            document.getElementById('flapLeft').classList.add('open');
+            document.getElementById('flapRight').classList.add('open');
+
+            // Muestra el contenido principal de fondo preparándolo
+            document.getElementById('mainApp').style.display = 'block';
+
+            // Después de que termine la animación (1.5s), quita el sobre del DOM y permite scroll
+            setTimeout(() => {
+                document.getElementById('envelope').style.display = 'none';
+                document.body.style.overflow = 'auto'; // Restaura el scroll
+            }, 1500);
+        }
+
+        // --- 2. Lógica de Cuenta Regresiva (Target: 19 Sept 2026) ---
+        const countDownDate = new Date("Sep 19, 2026 16:00:00").getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            // Cálculos matemáticos
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Imprimir en HTML con ceros a la izquierda si es menor a 10
+            document.getElementById("days").innerHTML = days < 10 ? '0' + days : days;
+            document.getElementById("hours").innerHTML = hours < 10 ? '0' + hours : hours;
+            document.getElementById("minutes").innerHTML = minutes < 10 ? '0' + minutes : minutes;
+
+            // Texto cuando termina la cuenta
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "<div class='cursive' style='font-size: 30px; color: var(--rosa-palo);'>¡Llegó el gran día!</div>";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
